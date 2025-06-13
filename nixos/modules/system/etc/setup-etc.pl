@@ -58,6 +58,11 @@ sub isStatic {
     return 0;
 }
 
+my $static_docker_path = "/etc/static/docker";
+
+if (-e $static_docker_path) {
+    print STDERR "Entering /etc/docker to check for obsolete symlinks (as $static_docker_path is not a symlink).\n";
+}
 # Remove dangling symlinks that point to /etc/static.  These are
 # configuration files that existed in a previous configuration but not
 # in the current one.  For efficiency, don't look under /etc/nixos
@@ -67,6 +72,12 @@ sub cleanup {
     if ($File::Find::name eq "/etc/nixos") {
         $File::Find::prune = 1;
         return;
+    }
+    if ($File::Find::name eq "/etc/docker") {
+        unless (-e $static_docker_path) {
+            $File::Find::prune = 1;
+            return;
+        }
     }
     if (-l $_) {
         my $target = readlink $_;
