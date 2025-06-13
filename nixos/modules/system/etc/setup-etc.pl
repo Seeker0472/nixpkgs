@@ -71,6 +71,7 @@ sub cleanup {
     if (-l $_) {
         my $target = readlink $_;
         if (substr($target, 0, length $static) eq $static) {
+            print "cleanup-remove:FILE:---$File::Find::name\n";
             my $x = "/etc/static/" . substr($File::Find::name, length "/etc/");
             unless (-l $x) {
                 print STDERR "removing obsolete symlink ‘$File::Find::name’...\n";
