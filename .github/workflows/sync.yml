@@ -1,0 +1,20 @@
+on:
+  schedule:
+  - cron: "0 2 * * *"
+  
+  workflow_dispatch:
+
+jobs:
+  fetch_upstream:
+    name: sync upstream of nixpkgs_unstable
+    runs-on: ubuntu-22.04
+    steps:
+      - name: main
+        run: |
+          git config --global user.name 'Seeker472-sync-bot'
+          git config --global user.email 'gmx472@qq.com'
+          git clone https://${{ secrets.ACCESS_TOKEN }}@github.com/Seeker0472/nixpkgs.git -b unstable-test
+          git remote add upstream https://${{ secrets.ACCESS_TOKEN }}@github.com/NixOS/nixpkgs.git
+          git fetch upstream nixos-unstable
+          git merge upstream/nixos-unstable
+          git push origin unstable-test
