@@ -363,7 +363,6 @@ in
           echo "setting up /etc..."
           ${pkgs.perl.withPackages (p: [ p.FileSlurp ])}/bin/perl ${./setup-etc.pl} ${etc}/etc
           echo "perl exec finished"
-          echo "perl exec finished"
         '';
 
     system.build.etcBasedir = pkgs.runCommandLocal "etc-lowerdir" { } ''

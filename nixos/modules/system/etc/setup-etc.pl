@@ -6,14 +6,12 @@ use File::Basename;
 use File::Slurp;
 
 my $etc = $ARGV[0] or die;
-my $static = "/etc/static\n";
+my $static = "/etc/static";
 
 my %function_call_counts;
 
-print "PONIT-1\n";
-
 sub atomicSymlink {
-    $function_call_counts{atomicSymlink}++; # 增加计数
+    $function_call_counts{atomicSymlink}++;
     my ($source, $target) = @_;
     my $tmp = "$target.tmp";
     unlink $tmp;
@@ -26,17 +24,15 @@ sub atomicSymlink {
     }
 }
 
-print "POINT-2\n";
 # Atomically update /etc/static to point at the etc files of the
 # current configuration.
 atomicSymlink $etc, $static or die;
 
-print "POINT-3\n";
 # Returns 1 if the argument points to the files in /etc/static.  That
 # means either argument is a symlink to a file in /etc/static or a
 # directory with all children being static.
 sub isStatic {
-    $function_call_counts{isStatic}++; # 增加计
+    $function_call_counts{isStatic}++;
 
     my $path = shift;
 
@@ -67,7 +63,7 @@ sub isStatic {
 # in the current one.  For efficiency, don't look under /etc/nixos
 # (where all the NixOS sources live).
 sub cleanup {
-    $function_call_counts{cleanup}++; # 增加计数
+    $function_call_counts{cleanup}++;
     if ($File::Find::name eq "/etc/nixos") {
         $File::Find::prune = 1;
         return;
@@ -85,17 +81,13 @@ sub cleanup {
 
 }
 
-print "POINT-4\n";
 
 find(\&cleanup, "/etc");
 
-print "POINT-5\n";
 
 # Use /etc/.clean to keep track of copied files.
 my @oldCopied = read_file("/etc/.clean", chomp => 1, err_mode => 'quiet');
 open CLEAN, ">>/etc/.clean";
-
-print "POINT-5\n";
 
 # For every file in the etc tree, create a corresponding symlink in
 # /etc to /etc/static.  The indirection through /etc/static is to make
@@ -105,7 +97,7 @@ my @copied;
 
 
 sub link {
-    $function_call_counts{link}++; # 增加计数
+    $function_call_counts{link}++;
     my $fn = substr $File::Find::name, length($etc) + 1 or next;
 
     # nixos-enter sets up /etc/resolv.conf as a bind mount, so skip it.
@@ -152,22 +144,17 @@ sub link {
 
 find(\&link, $etc);
 
-
-print "POINT-6\n";
-
 # Delete files that were copied in a previous version but not in the
 # current.
 foreach my $fn (@oldCopied) {
-    print "FOREACH-start (oldCopied)\n";
-    $function_call_counts{foreach}++; # 增加计数
+    $function_call_counts{foreach}++;
 
     if (!defined $created{$fn}) {
-        $function_call_counts{foreach_y}++; # 增加计数
+        $function_call_counts{foreach_y}++;
         $fn = "/etc/$fn";
         print STDERR "removing obsolete file ‘$fn’...\n";
         unlink "$fn";
     }
-    print "FOERACH-end\n";
 
 }
 
@@ -176,15 +163,11 @@ foreach my $fn (@oldCopied) {
 close CLEAN;
 write_file("/etc/.clean", map { "$_\n" } sort @copied);
 
-print "POINT-7\n";
-
 # Create /etc/NIXOS tag if not exists.
 # When /etc is not on a persistent filesystem, it will be wiped after reboot,
 # so we need to check and re-create it during activation.
 open TAG, ">>/etc/NIXOS";
 close TAG;
-
-print "POINT-8\n";
 
 print "\n--- Function Call Summary ---\n";
 foreach my $func_name (sort keys %function_call_counts) {
