@@ -13,9 +13,9 @@ jobs:
         run: |
           git config --global user.name 'Seeker472-sync-bot'
           git config --global user.email 'gmx472@qq.com'
-          git clone https://${{ secrets.ACCESS_TOKEN }}@github.com/Seeker0472/nixpkgs.git -b unstable-test tmp
+          git clone --depth 20 https://${{ secrets.ACCESS_TOKEN }}@github.com/Seeker0472/nixpkgs.git -b unstable-test tmp
           cd tmp
           git remote add upstream https://${{ secrets.ACCESS_TOKEN }}@github.com/NixOS/nixpkgs.git
-          git fetch upstream nixos-unstable
+          git fetch --depth 20 upstream nixos-unstable
           git merge upstream/nixos-unstable
           git push origin unstable-test
