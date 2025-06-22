@@ -1,6 +1,6 @@
 on:
   schedule:
-  - cron: "0 2 * * *"
+#  - cron: "0 2 * * *"
   
   workflow_dispatch:
 
@@ -17,5 +17,5 @@ jobs:
           cd tmp
           git remote add upstream https://${{ secrets.ACCESS_TOKEN }}@github.com/NixOS/nixpkgs.git
           git fetch --depth 20 upstream nixos-unstable
-          git merge upstream/nixos-unstable
+          git merge -Xtheirs upstream/nixos-unstable
           git push origin unstable-test
